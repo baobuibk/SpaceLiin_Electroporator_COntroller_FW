@@ -13,7 +13,7 @@ tSchedulerTask 	g_psSchedulerTable[SCHEDULER_TASK_COUNT] =
                             (void *) 0,
                             5,                          //call every 248us
                             0,			        //count from start
-                            true		        //is active
+                            true		        //`is active
                     },
                     {
                             &PID_Task,
@@ -81,6 +81,9 @@ void App_Main(void)
 
     while (1)
     {
+
+
+
         SchedulerRun();
     }
 }

@@ -45,6 +45,8 @@ char g_FSP_line_buffer[FSP_BUF_LEN];
 
 bool is_receive_SOD = false;
 bool escape = false;
+float temperature;
+uint32_t pressure;
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Public Function ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 /* :::::::::: CMD Line Task Init :::::::: */
@@ -129,8 +131,48 @@ void FSP_Line_Task(void) {
 }
 
 void FSP_PROCESS() {
+	switch (s_GPP_FspPacket.type) {
+
+
+		case FSP_PKT_TYPE_DATA:
+
+			break;
+		case FSP_PKT_TYPE_DATA_WITH_ACK:
+
+			break;
+		case FSP_PKT_TYPE_CMD:
+
+			break;
+		case FSP_PKT_TYPE_CMD_WITH_ACK:
+
+			break;
+		case FSP_PKT_TYPE_ACK:
+
+			break;
+		case FSP_PKT_TYPE_NACK:
+
+			break;
+		case FSP_PKT_TYPE_CMD_W_DATA:
+			switch (s_pGPP_Sfp_Payload->getBMP390.Cmd) {
+			case FSP_CMD_GET_BMP390	:
+				UART_Send_String(&RS232_UART, "Received FSP_CMD_GET_BMP390\r\n");
+				temperature = atof(s_pGPP_Sfp_Payload->getBMP390.temp);
+				pressure = atoi(s_pGPP_Sfp_Payload->getBMP390.pressure);
+				UART_Send_String(&RS232_UART, "temperature: ");
+				UART_Send_String(&RS232_UART, s_pGPP_Sfp_Payload->getBMP390.temp);
+				UART_Send_String(&RS232_UART, " Celsius");
+				UART_Send_String(&RS232_UART, "\r\npressure: ");
+				UART_Send_String(&RS232_UART, s_pGPP_Sfp_Payload->getBMP390.pressure);
+				UART_Send_String(&RS232_UART, " Pa\r\n");
+				UART_Send_String(&RS232_UART, ">");
+				break;
+			default:
+				break;
+
+	}
 
 }
+	}
 /* :::::::::: IRQ Handler ::::::::::::: */
 void GPP_UART_IRQHandler(void) {
 	if (LL_USART_IsActiveFlag_TXE(GPP_UART.handle) == true) {

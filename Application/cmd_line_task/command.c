@@ -11,7 +11,7 @@
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Public Variables ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 extern uart_stdio_typedef RS232_UART;
 extern uart_stdio_typedef GPP_UART;
-
+int i =0;
 tCmdLineEntry g_psCmdTable[] = {
 		{ "help", 			Cmd_help,			" : Display list of commands" },
 //      { "MARCO",          CMD_line_test,      " : TEST" },
@@ -30,6 +30,7 @@ tCmdLineEntry g_psCmdTable[] = {
 		{ "CHANNEL_SET", 	CMD_CHANNEL_SET, 	" : Choose a cap channel" },
 		{ "CHANNEL_CONTROL",CMD_CHANNEL_CONTROL," : Control the setted channel" },
 		{ "CALL_GPP", 		CMD_CALL_GPP,	    " : Test communicate to GPP" },
+		{ "GET_BMP390", 		CMD_GET_BMP390,	    " : Get temperature and pressure" },
 		{ 0, 0, 0 }
 };
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Public Function ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -282,7 +283,8 @@ int CMD_PULSE_DELAY(int argc, char *argv[]) {
 	fsp_encode(&s_GPC_FspPacket, encoded_frame, &frame_len);
 
 	UART_FSP(&GPP_UART, encoded_frame, frame_len);
-
+	UART_Printf(&RS232_UART, "\nAvailable commands%d\r\n", i);
+	i++;
 	return CMDLINE_OK;
 }
 
@@ -616,6 +618,31 @@ int CMD_CALL_GPP(int argc, char *argv[]) {
 	s_GPC_FspPacket.src_adr = fsp_my_adr;
 	s_GPC_FspPacket.dst_adr = FSP_ADR_GPP;
 	s_GPC_FspPacket.length = 2;
+	s_GPC_FspPacket.type = FSP_PKT_TYPE_CMD_W_DATA;
+	s_GPC_FspPacket.eof = FSP_PKT_EOF;
+	s_GPC_FspPacket.crc16 = crc16_CCITT(FSP_CRC16_INITIAL_VALUE,
+			&s_GPC_FspPacket.src_adr, s_GPC_FspPacket.length + 4);
+
+	uint8_t encoded_frame[10] = { 0 };
+	uint8_t frame_len;
+	fsp_encode(&s_GPC_FspPacket, encoded_frame, &frame_len);
+
+	UART_FSP(&GPP_UART, encoded_frame, frame_len);
+
+	return CMDLINE_OK;
+}
+int CMD_GET_BMP390(int argc, char *argv[]) {
+	if (argc < 1)
+		return CMDLINE_TOO_FEW_ARGS;
+	else if (argc > 1)
+		return CMDLINE_TOO_MANY_ARGS;
+
+	s_pGPC_Sfp_Payload->commonFrame.Cmd = FSP_CMD_GET_BMP390;
+
+	s_GPC_FspPacket.sod = FSP_PKT_SOD;
+	s_GPC_FspPacket.src_adr = fsp_my_adr;
+	s_GPC_FspPacket.dst_adr = FSP_ADR_GPP;
+	s_GPC_FspPacket.length = 1;
 	s_GPC_FspPacket.type = FSP_PKT_TYPE_CMD_W_DATA;
 	s_GPC_FspPacket.eof = FSP_PKT_EOF;
 	s_GPC_FspPacket.crc16 = crc16_CCITT(FSP_CRC16_INITIAL_VALUE,

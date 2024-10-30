@@ -13,7 +13,7 @@ static void fsp_print(uint8_t packet_length);
 extern uart_stdio_typedef RS232_UART;
 extern uart_stdio_typedef RF_UART;
 extern uart_stdio_typedef GPP_UART;
-
+bool is_being_get_i2c_sensor= false;
 tCmdLineEntry g_psCmdTable[] = {
 		/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Cap Control Command ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 		{ "SET_CAP_VOLT",			CMD_SET_CAP_VOLT, 			" : Set cap voltage" },
@@ -60,7 +60,7 @@ tCmdLineEntry g_psCmdTable[] = {
 		{ "CHANNEL_CONTROL",		CMD_CHANNEL_CONTROL,		" : Control the setted channel" },
 		{ "CALL_GPP", 				CMD_CALL_GPP,	    		" : Test communicate to GPP" },
 		{ "GET_BMP390", 			CMD_GET_BMP390,	    		" : Get temperature and pressure" },
-		{ "GET_LMSDOX", 			CMD_GET_LMSDOX,	   			 " : Get accel and gyro" },
+		{ "GET_I2C_SENSOR", 			CMD_GET_I2C_SENSOR,	   			 " : Get accel and gyro" },
 		{ 0, 0, 0 }
 };
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Public Function ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -842,6 +842,13 @@ int CMD_GET_BMP390(int argc, char *argv[])
 	fsp_print(1);
 	return CMDLINE_OK;
 }
+int CMD_STOP_GET_SENSOR(){
+	//
+	is_being_get_i2c_sensor= false;
+	pu_GPC_FSP_Payload->commonFrame.Cmd = FSP_CMD_STOP_GET_SENSOR;
+	fsp_print(1);
+	return CMDLINE_OK;
+}
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Private Functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 static void fsp_print(uint8_t packet_length)
@@ -861,13 +868,13 @@ static void fsp_print(uint8_t packet_length)
 	UART_FSP(&GPP_UART, encoded_frame, frame_len);
 }
 
-int CMD_GET_LMSDOX(int argc, char *argv[]) {
+int CMD_GET_I2C_SENSOR(int argc, char *argv[]) {
 	if (argc < 1)
 		return CMDLINE_TOO_FEW_ARGS;
 	else if (argc > 1)
 		return CMDLINE_TOO_MANY_ARGS;
 
-	pu_GPC_FSP_Payload->commonFrame.Cmd = FSP_CMD_GET_LMSDOX;
+	pu_GPC_FSP_Payload->commonFrame.Cmd = FSP_CMD_GET_I2C_SENSOR;
 
 	s_GPC_FSP_Packet.sod = FSP_PKT_SOD;
 	s_GPC_FSP_Packet.src_adr = fsp_my_adr;
@@ -883,6 +890,6 @@ int CMD_GET_LMSDOX(int argc, char *argv[]) {
 	fsp_encode(&s_GPC_FSP_Packet, encoded_frame, &frame_len);
 
 	UART_FSP(&GPP_UART, encoded_frame, frame_len);
-
+	is_being_get_i2c_sensor= true;
 	return CMDLINE_OK;
 }

@@ -38,7 +38,7 @@ char                g_RS232_CMD_line_buffer[64];
 
 cmd_line_typedef    RF_CMD_line;
 char                g_RF_CMD_line_buffer[64];
-
+extern bool is_being_get_i2c_sensor;
 static const char * ErrorCode[7] = 
 {
     "OK\n",
@@ -155,6 +155,13 @@ void RS232_CMD_Line_Task(void*)
             }
             else
             {
+            	//implement stop getting  sensor
+            			if (is_being_get_i2c_sensor == true) {
+            	            	is_being_get_i2c_sensor = false;
+            	            	CMD_STOP_GET_SENSOR();
+            	            	UART_Send_String(&RS232_UART, "stop getting data \r\n");
+            			}
+
                 UART_Send_String(&RS232_UART, "> ");
             }
         }
@@ -214,6 +221,7 @@ void RF_CMD_Line_Task(void*)
             }
             else
             {
+
                 UART_Send_String(&RF_UART, "> ");
             }
         }

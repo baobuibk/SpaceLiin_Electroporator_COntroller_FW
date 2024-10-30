@@ -382,24 +382,29 @@ void FSP_Line_Process()
 		UART_Send_String(&RS232_UART, "> ");
 		UART_Send_String(&RF_UART, "> ");
 		break;
-	case FSP_CMD_GET_LMSDOX:
-		UART_Send_String(&RS232_UART, "Received FSP_CMD_GET_LSMDOX\n");
-		UART_Send_String(&RF_UART, "Received FSP_CMD_GET_LSMDOX\n");
+	case FSP_CMD_GET_I2C_SENSOR:
+		UART_Send_String(&RS232_UART, "Received FSP_CMD_GET_I2C_SENSOR\n");
+		UART_Send_String(&RF_UART, "Received FSP_CMD_GET_I2C_SENSOR\n");
 
 		uint32_t accel_x=0, accel_y=0, accel_z=0, gyro_x=0, gyro_y=0, gyro_z=0;
 
-		convertArrayToInteger(pu_GPP_FSP_Payload->getLSMDOX.accel_x, &accel_x);
-		convertArrayToInteger(pu_GPP_FSP_Payload->getLSMDOX.accel_y, &accel_y);
-		convertArrayToInteger(pu_GPP_FSP_Payload->getLSMDOX.accel_z, &accel_z);
-		convertArrayToInteger(pu_GPP_FSP_Payload->getLSMDOX.gyro_x, &gyro_x);
-		convertArrayToInteger(pu_GPP_FSP_Payload->getLSMDOX.gyro_y, &gyro_y);
-		convertArrayToInteger(pu_GPP_FSP_Payload->getLSMDOX.gyro_z, &gyro_z);
+		convertArrayToInteger(pu_GPP_FSP_Payload->GET_I2C_SENSOR.accel_x, &accel_x);
+		convertArrayToInteger(pu_GPP_FSP_Payload->GET_I2C_SENSOR.accel_y, &accel_y);
+		convertArrayToInteger(pu_GPP_FSP_Payload->GET_I2C_SENSOR.accel_z, &accel_z);
+		convertArrayToInteger(pu_GPP_FSP_Payload->GET_I2C_SENSOR.gyro_x, &gyro_x);
+		convertArrayToInteger(pu_GPP_FSP_Payload->GET_I2C_SENSOR.gyro_y, &gyro_y);
+		convertArrayToInteger(pu_GPP_FSP_Payload->GET_I2C_SENSOR.gyro_z, &gyro_z);
+		UART_Printf(&RS232_UART, "> TEMPERATURE: %s Celsius\n", pu_GPP_FSP_Payload->GET_I2C_SENSOR.temp);
+		UART_Printf(&RF_UART, "> TEMPERATURE: %s Celsius\n", pu_GPP_FSP_Payload->GET_I2C_SENSOR.temp);
 
-		UART_Printf(&RS232_UART, "> ACCEL x: %dmm/s2; ACCEL y: %dmm/s2; ACCEL z: %dmm/s2\n", accel_x, accel_y, accel_z);
-		UART_Printf(&RF_UART, "> ACCEL x: %dmm/s2; ACCEL y: %dmm/s2; ACCEL z: %dmm/s2\n", accel_x, accel_y, accel_z);
+		UART_Printf(&RS232_UART, "> PRESSURE: %s Pa\n", pu_GPP_FSP_Payload->GET_I2C_SENSOR.pressure);
+		UART_Printf(&RF_UART, "> PRESSURE: %s Pa\n", pu_GPP_FSP_Payload->GET_I2C_SENSOR.pressure);
 
-		UART_Printf(&RS232_UART, "> GYRO x: %dmpds; GYRO y: %dmpds; GYRO z: %dmpds\n", gyro_x, gyro_y, gyro_z);
-		UART_Printf(&RF_UART, "> GYRO x: %dmpds; GYRO y: %dmpds; GYRO z: %dmpds\n", gyro_x, gyro_y, gyro_z);
+		UART_Printf(&RS232_UART, "> ACCEL x: %d mg; ACCEL y: %d mg; ACCEL z: %d mg\n", accel_x, accel_y, accel_z);
+		UART_Printf(&RF_UART, "> ACCEL x: %d mg; ACCEL y: %d mg; ACCEL z: %d mg\n", accel_x, accel_y, accel_z);
+
+		UART_Printf(&RS232_UART, "> GYRO x: %d mdps; GYRO y: %d mdps; GYRO z: %d mdps\n", gyro_x, gyro_y, gyro_z);
+		UART_Printf(&RF_UART, "> GYRO x: %d mdps; GYRO y: %d mdps; GYRO z: %d mdps\n", gyro_x, gyro_y, gyro_z);
 
 		UART_Send_String(&RS232_UART, "> ");
 		UART_Send_String(&RF_UART, "> ");

@@ -61,7 +61,8 @@ int CMD_CHANNEL_SET(int argc, char *argv[]);
 int CMD_CHANNEL_CONTROL(int argc, char *argv[]);
 int CMD_CALL_GPP(int argc, char *argv[]);
 int CMD_GET_BMP390(int argc, char *argv[]);
-int CMD_GET_LMSDOX(int argc, char *argv[]) ;
+int CMD_GET_I2C_SENSOR(int argc, char *argv[]) ;
+int CMD_STOP_GET_SENSOR();
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ End of the program ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 #endif /* COMMAND_H_ */
